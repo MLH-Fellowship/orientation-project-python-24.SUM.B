@@ -1,8 +1,9 @@
 '''
 Flask Application
 '''
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 from models import Experience, Education, Skill
+from helpers.education_api import *
 
 app = Flask(__name__)
 
@@ -44,21 +45,30 @@ def experience():
     '''
     Handle experience requests
     '''
+    # This method return us a JSON object representing the data associated with the ID passed as query parameter
+    # It can be None or an integer. If None it returns empty json object.
     if request.method == 'GET':
-        return jsonify()
+        index = request.args.get("id")
+        return handle_education_get_request(request, index)
 
     if request.method == 'POST':
         return jsonify({})
 
     return jsonify({})
 
-@app.route('/resume/education', methods=['GET', 'POST'])
-def education():
+@app.route('/resume/education/<int:edu_id>', methods=['GET', 'POST'])
+def education(edu_id):
     '''
     Handles education requests
     '''
     if request.method == 'GET':
-        return jsonify({})
+        '''
+        Handles GET requests for a specific education by ID
+        '''
+        if 0 <= edu_id < len(data["education"]):
+            return jsonify(data["education"][edu_id].__dict__)
+        else:
+            abort(404, description="Education not found")
 
     if request.method == 'POST':
         return jsonify({})
