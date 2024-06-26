@@ -24,4 +24,5 @@ def handle_education_get_request(data, index = None):
         except Exception as e:
             return jsonify({"error": f"Server Error: {str(e)}"})
     else:
-        pass
+        # Returns all the education data present in the database. If there are none, returns an empty list
+        return jsonify(data.get('education', []))
