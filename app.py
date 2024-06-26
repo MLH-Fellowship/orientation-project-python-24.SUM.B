@@ -1,7 +1,7 @@
 '''
 Flask Application
 '''
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, Response
 from models import Experience, Education, Skill
 from helpers.education_api import *
 
@@ -40,7 +40,7 @@ def hello_world():
     return jsonify({"message": "Hello, World!"})
 
 
-@app.route('/resume/experience', methods=['GET', 'POST'])
+@app.route('/resume/experience', methods=['GET', 'POST', 'DELETE'])
 def experience():
     '''
     Handle experience requests
@@ -53,7 +53,16 @@ def experience():
 
     if request.method == 'POST':
         return jsonify({})
-
+    
+    if request.method == 'DELETE':
+        index = request.args.get("id")
+        index = int(index)
+        if 0 <= index < len(data["experience"]) and len(data["experience"]) > 0:
+            data["experience"].pop(index)
+            return Response(status=204) # Return no content body, since it's not necessary for DELETE requests
+        else:
+            abort(404, description="Experience not found")
+        
     return jsonify({})
 
 @app.route('/resume/education/', methods=['GET', 'POST'])
