@@ -72,3 +72,13 @@ def test_skill():
 
     response = app.test_client().get('/resume/skill')
     assert response.json[item_id] == example_skill
+
+def test_experience_deletion():
+    '''
+    Remove the first experience from the list.
+    
+    Check if the experience has been removed from the list
+    '''
+    id = 0
+    response = app.test_client().delete(f'/resume/experience?id={id}')
+    assert response.status_code == 204
