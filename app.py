@@ -76,7 +76,7 @@ def education(edu_id):
     return jsonify({})
 
 
-@app.route('/resume/skill', methods=['GET', 'POST'])
+@app.route('/resume/skill', methods=['GET', 'POST', 'DELETE', 'PUT'])
 def skill():
     '''
     Handles Skill requests
@@ -86,5 +86,36 @@ def skill():
 
     if request.method == 'POST':
         return jsonify({})
+    if request.method == 'PUT':
 
+        return jsonify({})
+    if request.method == 'DELETE':
+        return jsonify({})
     return jsonify({})
+
+
+#Delete Existing Skill by Index
+@app.route('/resume/skill/<int:skill_id>', methods=['DELETE'])
+
+def delete_skill(skill_id):
+
+    if 0 <= skill_id < len(data["skill"]):
+        deleted_skill = data["skill"].pop(skill_id)
+        return jsonify(deleted_skill.__dict__), 200
+    else:
+        abort(404, description="Skill not found")
+
+
+#Update Exisitng Skill by Index
+@app.route('/resume/skill/<int:skill_id>', methods=['PUT'])
+def edit_skill(skill_id):
+
+    if 0 <= skill_id < len(data["skill"]):
+        skill_data = request.json
+        new_skill = data["skill"](skill_id)
+        new_skill.name = skill_data.get('name', new_skill.name)
+        new_skill.proficiency = skill_data.get('proficiency', new_skill.proficiency)
+        new_skill.logo = skill_data.get('logo', new_skill.logo)
+        return jsonify(new_skill.__dict__), 200
+    else:
+        abort(404, description="Skill not found")
