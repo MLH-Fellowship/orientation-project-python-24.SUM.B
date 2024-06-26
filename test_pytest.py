@@ -55,7 +55,37 @@ def test_education():
     assert response.json[item_id] == example_education
 
 def test_getting_education_by_id():
-    pass
+    
+    '''
+    Fetch Education details by its ID.
+    
+    Check that the returned education matches the added education.
+    '''
+    example_education = {
+        "course": "Engineering",
+        "school": "NYU",
+        "start_date": "October 2022",
+        "end_date": "August 2024",
+        "grade": "86%",
+        "logo": "example-logo.png"
+    }
+
+    # Add the new education entry
+    response = app.test_client().post('/resume/education', json=example_education)
+    item_id = response.json['id']
+
+    # Get the education entry by its ID
+    response = app.test_client().get(f'/resume/education/?id={item_id}')
+    retrieved_education = response.json
+
+    # Assert that the retrieved education matches the added education
+    assert retrieved_education['course'] == example_education['course']
+    assert retrieved_education['school'] == example_education['school']
+    assert retrieved_education['start_date'] == example_education['start_date']
+    assert retrieved_education['end_date'] == example_education['end_date']
+    assert retrieved_education['grade'] == example_education['grade']
+    assert retrieved_education['logo'] == example_education['logo']
+
 
 def test_getting_every_education():
     '''
