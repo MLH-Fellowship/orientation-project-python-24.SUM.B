@@ -180,6 +180,45 @@ def test_deleting_education():
     assert response.status_code == 204  # Assuming DELETE returns 204 No Content
 
 
+def test_updating_education():
+    '''
+    Updates Education details by its ID.
+    
+    Check that the returned education matches the updated education.
+    '''
+    example_education = {
+        "course": "Engineering",
+        "school": "NYU",
+        "start_date": "October 2022",
+        "end_date": "August 2024",
+        "grade": "86%",
+        "logo": "example-logo.png"
+    }
+
+    # Add the new education entry
+    response = app.test_client().post('/resume/education', json=example_education)
+    item_id = response.json['id']
+
+    # Update the education entry by its ID
+    updated_education = {
+        "course": "Computer Engineering",
+        "school": "MIT",
+        "start_date": "September 2022",
+        "end_date": "June 2026",
+        "grade": "95%",
+        "logo": "mit-logo.png"
+    }
+
+    response = app.test_client().put(f'/resume/education/{item_id}', json=updated_education)
+    assert response.status_code == 200
+    assert response.json['course'] == updated_education['course']
+    assert response.json['school'] == updated_education['school']
+    assert response.json['start_date'] == updated_education['start_date']
+    assert response.json['end_date'] == updated_education['end_date']
+    assert response.json['grade'] == updated_education['grade']
+    assert response.json['logo'] == updated_education['logo']
+
+
 def test_skill():
     '''
     Add a new skill and then get all skills. 

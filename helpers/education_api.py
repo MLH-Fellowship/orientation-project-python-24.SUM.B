@@ -43,3 +43,24 @@ def handle_education_post_request(data, new_education_data):
         return (data, jsonify({"id": len(data["education"]) - 1}))
     else:
         return (data, Response(status=400, description="Bad Request"))
+    
+
+def handle_education_put_request(data, index, new_education_data):
+    try:
+        index = int(index)
+        if 0 <= index < len(data["education"]):
+            # Update the education object at the given index
+            edu = data["education"][index]
+            edu.course = new_education_data.get('course', edu.course)
+            edu.school = new_education_data.get('school', edu.school)
+            edu.start_date = new_education_data.get('start_date', edu.start_date)
+            edu.end_date = new_education_data.get('end_date', edu.end_date)
+            edu.grade = new_education_data.get('grade', edu.grade)
+            edu.logo = new_education_data.get('logo', edu.logo)
+            return (data, jsonify(edu.__dict__))
+        else:
+            return (data, jsonify({"error": "Education not found"}))
+    except ValueError:
+        return (data, jsonify({"error": "Invalid index. Must be an integer."}))
+    except Exception as e:
+        return (data, jsonify({"error": f"Server Error: {str(e)}"}))

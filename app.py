@@ -88,6 +88,13 @@ def education():
             return Response(status=204)
         else:
             abort(404, description="Education not found")
+    
+    if request.method == 'PUT':
+        index = request.args.get("id")
+        index = int(index)
+        new_education_data = request.json
+        data, response = handle_education_put_request(data, new_education_data, index)
+        return response
 
     return jsonify({})
 
