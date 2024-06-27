@@ -154,30 +154,6 @@ def test_getting_every_education():
         )
 
 
-def test_deleting_education():
-    '''
-    Deletes Education by ID.
-    
-    Check that the education is no longer in the list
-    '''
-    example_education = {
-        "course": "Engineering",
-        "school": "NYU",
-        "start_date": "October 2022",
-        "end_date": "August 2024",
-        "grade": "86%",
-        "logo": "example-logo.png"
-    }
-
-    # Add the new education entry
-    response = app.test_client().post('/resume/education', json=example_education)
-    item_id = response.json['id']
-
-    # Delete the education entry by its ID
-    response = app.test_client().delete(f'/resume/education/?id={item_id}')
-    assert response.status_code == 204  # Assuming DELETE returns 204 No Content
-
-
 def test_updating_education():
     '''
     Updates Education details by its ID.
