@@ -34,7 +34,7 @@ def test_experience():
     assert response.json[item_id] == example_experience
 
 
-def test_education():
+def test_posting_education():
     '''
     Add a new education and then get all educations. 
     
@@ -53,6 +53,17 @@ def test_education():
 
     response = app.test_client().get('/resume/education')
     assert response.json[item_id] == example_education
+    assert 'id' in response.json
+    item_id = response.json['id']
+
+    response = app.test_client().get(f'/resume/education/?id={item_id}')
+    assert response.status_code == 200
+    assert response.json[str(item_id)]['course'] == example_education['course']
+    assert response.json[str(item_id)]['school'] == example_education['school']
+    assert response.json[str(item_id)]['start_date'] == example_education['start_date']
+    assert response.json[str(item_id)]['end_date'] == example_education['end_date']
+    assert response.json[str(item_id)]['grade'] == example_education['grade']
+    assert response.json[str(item_id)]['logo'] == example_education['logo']
 
 
 def test_getting_education_by_id():

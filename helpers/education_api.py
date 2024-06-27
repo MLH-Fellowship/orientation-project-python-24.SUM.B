@@ -1,4 +1,5 @@
 from flask import jsonify, Response, abort
+from models import Education
 
 def handle_education_get_request(data, index = None):
     # Here if user pass in index, we return the educational details for that index
@@ -26,11 +27,19 @@ def handle_education_get_request(data, index = None):
         # Returns all the education data present in the database. If there are none, returns an empty list
         return jsonify(data.get('education', []))
     
-def handle_education_delete_request(data, index):
-    index = int(index)
-    if 0 <= index < len(data["education"]) and len(data["education"]) > 0:
-        data["education"].pop(index)
-        return Response(status=204)
-    else:
-        abort(404, description="Education not found")
 
+def handle_education_post_request(data, new_education_data):
+    if new_education_data:
+        # Create a new Education object and append it to the list of education objects
+        edu = Education(
+            course=new_education_data.get('course'),
+            school=new_education_data.get('school'),
+            start_date=new_education_data.get('start_date'),
+            end_date=new_education_data.get('end_date'),
+            grade=new_education_data.get('grade'),
+            logo=new_education_data.get('logo')
+        )
+        data["education"].append(edu)
+        return (data, jsonify({"id": len(data["education"]) - 1}))
+    else:
+        return (data, Response(status=400, description="Bad Request"))

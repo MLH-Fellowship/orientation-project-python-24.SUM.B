@@ -76,11 +76,18 @@ def education():
         return handle_education_get_request(data, index)
 
     if request.method == 'POST':
-        return jsonify({})
+        new_education_data = request.json
+        data, response = handle_education_post_request(data, new_education_data)
+        return response
     
     if request.method == 'DELETE':
         index = request.args.get("id")
-        return handle_education_delete_request(data, index)
+        index = int(index)
+        if 0 <= index < len(data["education"]) and len(data["education"]) > 0:
+            data["education"].pop(index)
+            return Response(status=204)
+        else:
+            abort(404, description="Education not found")
 
     return jsonify({})
 
