@@ -45,23 +45,43 @@ def experience():
     '''
     Handle experience requests
     '''
-    # This method return us a JSON object representing the data associated with the ID passed as query parameter
-    # It can be None or an integer. If None it returns empty json object.
+    '''
+    Returns a JSON object from a GET request for a specific experience ID.
+    If the ID is not found/is out of bounds, raises a 404.
+    '''
     if request.method == 'GET':
         index = request.args.get("id")
-        return handle_education_get_request(request, index)
+        index = int(index)
+        if 0 <= index < len(data["experience"]) and len(data["experience"]) > 0:
+            exp = data["experience"][index]
+            return jsonify({
+                "title": exp.title,
+                "company": exp.company,
+                "start_date": exp.start_date,
+                "end_date": exp.end_date,
+                "description": exp.description,
+                "logo": exp.logo,
+                })
+        abort(404, description="Experience not found") # 404 if ID isn't valid
 
     if request.method == 'POST':
-        return jsonify({})
+        experience_data = request.json
+        new_experience = Experience(experience_data["title"],
+                                    experience_data["company"],
+                                    experience_data["start_date"],
+                                    experience_data["end_date"],
+                                    experience_data["description"],
+                                    experience_data["logo"])
+        data["experience"].append(new_experience)
+        return jsonify({"id": len(data["experience"])-1})
     
     if request.method == 'DELETE':
         index = request.args.get("id")
         index = int(index)
         if 0 <= index < len(data["experience"]) and len(data["experience"]) > 0:
             data["experience"].pop(index)
-            return Response(status=204) # Return no content body, since it's not necessary for DELETE requests
-        else:
-            abort(404, description="Experience not found")
+            return Response(status=204) # Return no content body, not necessary for DELETE
+        abort(404, description="Experience not found")
         
     return jsonify({})
 
