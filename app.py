@@ -45,8 +45,6 @@ def experience():
     '''
     Handle experience requests
     '''
-    # This method return us a JSON object representing the data associated with the ID passed as query parameter
-    # It can be None or an integer. If None it returns empty json object.
     if request.method == 'GET':
         return jsonify({})
 
@@ -69,17 +67,13 @@ def education():
     '''
     Handles education requests
     '''
-    # This method return us a JSON object representing the data associated with the ID passed as query parameter
-    # It can be None or an integer. If None it returns empty json object.
     if request.method == 'GET':
         index = request.args.get("id")
         return handle_education_get_request(data, index)
-
     if request.method == 'POST':
         new_education_data = request.json
         data, response = handle_education_post_request(data, new_education_data)
         return response
-    
     if request.method == 'DELETE':
         index = request.args.get("id")
         index = int(index)
@@ -88,7 +82,6 @@ def education():
             return Response(status=204)
         else:
             abort(404, description="Education not found")
-    
     if request.method == 'PUT':
         index = request.args.get("id")
         index = int(index)

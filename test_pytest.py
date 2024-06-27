@@ -48,8 +48,8 @@ def test_posting_education():
         "grade": "86%",
         "logo": "example-logo.png"
     }
-    item_id = app.test_client().post('/resume/education',
-                                     json=example_education).json['id']
+    response = app.test_client().post('/resume/education', json=example_education)
+    item_id = response.json['id']
 
     response = app.test_client().get('/resume/education')
     assert response.json[item_id] == example_education
@@ -121,7 +121,6 @@ def test_getting_every_education():
             "logo": "stanford-logo.png"
         }
     ]
-    
     for edu in example_educations:
         response = app.test_client().post('/resume/education/', json=edu)
         assert response.status_code == 200  # Assuming POST returns 200 OK
@@ -130,7 +129,6 @@ def test_getting_every_education():
     response = app.test_client().get('/resume/education/')
     assert response.status_code == 200
     assert isinstance(response.json, list)
-    
     # Check if we have at least as many entries as we just added
     assert len(response.json) >= len(example_educations)
 
