@@ -1,7 +1,6 @@
-from flask import jsonify
+from flask import jsonify, Response, abort
 
 def handle_education_get_request(data, index = None):
-
     # Here if user pass in index, we return the educational details for that index
     if index is not None:
         try:
@@ -26,3 +25,12 @@ def handle_education_get_request(data, index = None):
     else:
         # Returns all the education data present in the database. If there are none, returns an empty list
         return jsonify(data.get('education', []))
+    
+def handle_education_delete_request(data, index):
+    index = int(index)
+    if 0 <= index < len(data["education"]) and len(data["education"]) > 0:
+        data["education"].pop(index)
+        return Response(status=204)
+    else:
+        abort(404, description="Education not found")
+

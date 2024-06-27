@@ -48,8 +48,7 @@ def experience():
     # This method return us a JSON object representing the data associated with the ID passed as query parameter
     # It can be None or an integer. If None it returns empty json object.
     if request.method == 'GET':
-        index = request.args.get("id")
-        return handle_education_get_request(request, index)
+        return jsonify({})
 
     if request.method == 'POST':
         return jsonify({})
@@ -65,7 +64,7 @@ def experience():
         
     return jsonify({})
 
-@app.route('/resume/education/', methods=['GET', 'POST'])
+@app.route('/resume/education/', methods=['GET', 'POST', 'DELETE', 'PUT'])
 def education():
     '''
     Handles education requests
@@ -74,10 +73,14 @@ def education():
     # It can be None or an integer. If None it returns empty json object.
     if request.method == 'GET':
         index = request.args.get("id")
-        return handle_education_get_request(request, index)
+        return handle_education_get_request(data, index)
 
     if request.method == 'POST':
         return jsonify({})
+    
+    if request.method == 'DELETE':
+        index = request.args.get("id")
+        return handle_education_delete_request(data, index)
 
     return jsonify({})
 

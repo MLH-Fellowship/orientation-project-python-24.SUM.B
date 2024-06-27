@@ -54,8 +54,8 @@ def test_education():
     response = app.test_client().get('/resume/education')
     assert response.json[item_id] == example_education
 
+
 def test_getting_education_by_id():
-    
     '''
     Fetch Education details by its ID.
     
@@ -143,6 +143,31 @@ def test_getting_every_education():
             all(item in edu.items() for item in example_edu.items())
             for edu in response.json
         )
+
+
+def test_deleting_education():
+    '''
+    Deletes Education by ID.
+    
+    Check that the education is no longer in the list
+    '''
+    example_education = {
+        "course": "Engineering",
+        "school": "NYU",
+        "start_date": "October 2022",
+        "end_date": "August 2024",
+        "grade": "86%",
+        "logo": "example-logo.png"
+    }
+
+    # Add the new education entry
+    response = app.test_client().post('/resume/education', json=example_education)
+    item_id = response.json['id']
+
+    # Delete the education entry by its ID
+    response = app.test_client().delete(f'/resume/education/?id={item_id}')
+    assert response.status_code == 204  # Assuming DELETE returns 204 No Content
+
 
 def test_skill():
     '''
