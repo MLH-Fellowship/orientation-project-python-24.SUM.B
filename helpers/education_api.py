@@ -1,7 +1,22 @@
 from flask import jsonify, Response, abort
 from models import Education
 
-def handle_education_get_request(data, index = None):
+
+def handle_education_get_request(data, index=None):
+    ''' Returns education data
+    Parameters
+    ----------
+    data: dictionary of array of objects
+        contains user data such as education, experiences, and skills
+    index: int, optional
+        index of a specific education entry
+
+    Returns
+    -------
+    JSON file:
+        either a specific education entry, or all education data in the database, or an error message
+    '''
+
     # Here if user pass in index, we return the educational details for that index
     if index is not None:
         try:
@@ -26,9 +41,23 @@ def handle_education_get_request(data, index = None):
     else:
         # Returns all the education data present in the database. If there are none, returns an empty list
         return jsonify(data.get('education', []))
-    
+
 
 def handle_education_post_request(data, new_education_data):
+    ''' Creates new education data
+    Parameters
+    ----------
+    data: dictionary of array of objects
+        contains user data such as education, experiences, and skills
+    new_education_data: JSON
+        contains data of the new education entry
+
+    Returns
+    -------
+    JSON file:
+        new JSON data file with the additional education added or an error message
+    '''
+
     if new_education_data:
         # Create a new Education object and append it to the list of education objects
         edu = Education(
@@ -43,9 +72,25 @@ def handle_education_post_request(data, new_education_data):
         return (data, jsonify({"id": len(data["education"]) - 1}))
     else:
         return (data, Response(status=400, description="Bad Request"))
-    
+
 
 def handle_education_put_request(data, index, new_education_data):
+    ''' Updates education data
+    Parameters
+    ----------
+    data: dictionary of array of objects
+        contains user data such as education, experiences, and skills
+    index: int
+        index of a specific education entry
+    new_education_data: JSON
+        contains data of the new education entry
+
+    Returns
+    -------
+    JSON file:
+        new JSON data file with updated education added or an error message
+    '''
+
     try:
         index = int(index)
         if 0 <= index < len(data["education"]):
@@ -53,7 +98,8 @@ def handle_education_put_request(data, index, new_education_data):
             edu = data["education"][index]
             edu.course = new_education_data.get('course', edu.course)
             edu.school = new_education_data.get('school', edu.school)
-            edu.start_date = new_education_data.get('start_date', edu.start_date)
+            edu.start_date = new_education_data.get(
+                'start_date', edu.start_date)
             edu.end_date = new_education_data.get('end_date', edu.end_date)
             edu.grade = new_education_data.get('grade', edu.grade)
             edu.logo = new_education_data.get('logo', edu.logo)
