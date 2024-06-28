@@ -1,11 +1,13 @@
 '''
 Flask Application
 '''
+from spellchecker import SpellChecker
 from flask import Flask, jsonify, request, abort, Response
 from models import Experience, Education, Skill
 from helpers.education_api import *
 
 app = Flask(__name__)
+spell = SpellChecker(distance=2)
 
 data = {
     "experience": [
@@ -145,3 +147,26 @@ def edit_skill(skill_id):
         return jsonify(new_skill.__dict__), 200
     else:
         abort(404, description="Skill not found")
+
+@app.route('/resume/spell-check', methods=['POST'])
+def spell_check():
+    '''
+    Handle spell checking on phrases.
+    Note that since the spell checker is based on a simple Levenshtein Distance algorithm,
+    some spell checking results may not be exactly correct.
+    
+    Returns a JSON format equivalent to the one suggested in issue #11.
+    '''
+    if request.method == 'POST':
+        phrase = request.args.get("phrase")
+        word_list = phrase.split()
+        correct_phrase = ""
+        corrections = spell.unknown(word_list)
+        for word in word_list:
+            if word.lower() not in corrections:
+                correct_phrase = correct_phrase + " " + word
+            else:
+                correct_phrase = correct_phrase + " " + spell.correction(word)
+        # Remove the first space added by the loop
+        correct_phrase = correct_phrase[1:]
+        return jsonify([{"before": phrase, "after": correct_phrase.capitalize()}])

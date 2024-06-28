@@ -230,3 +230,10 @@ def test_delete_skill():
     
     get_response = app.test_client().get('/resume/skill')
     assert skill_id not in get_response.json
+
+def test_spell_check():
+    phrase = "Helllo there"
+    expected_phrase = "Hello there"
+    
+    response = app.test_client().post(f'/resume/spell-check?phrase={phrase}')
+    assert response.json[0]['after'] == expected_phrase
