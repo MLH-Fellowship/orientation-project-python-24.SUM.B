@@ -87,19 +87,24 @@ def experience():
         
     return jsonify({})
 
-@app.route('/resume/education/', methods=['GET', 'POST'])
+@app.route('/resume/education/', methods=['GET', 'POST', 'PUT'])
 def education():
     '''
     Handles education requests
     '''
-    # This method return us a JSON object representing the data associated with the ID passed as query parameter
-    # It can be None or an integer. If None it returns empty json object.
     if request.method == 'GET':
         index = request.args.get("id")
-        return handle_education_get_request(request, index)
-
+        return handle_education_get_request(data, index)
     if request.method == 'POST':
-        return jsonify({})
+        new_education_data = request.json
+        data, response = handle_education_post_request(data, new_education_data)
+        return response
+    if request.method == 'PUT':
+        index = request.args.get("id")
+        index = int(index)
+        new_education_data = request.json
+        data, response = handle_education_put_request(data, new_education_data, index)
+        return response
 
     return jsonify({})
 

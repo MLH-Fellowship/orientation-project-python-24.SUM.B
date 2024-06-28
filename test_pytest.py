@@ -34,7 +34,7 @@ def test_experience():
     assert response.json[item_id] == example_experience
 
 
-def test_education():
+def test_posting_education():
     '''
     Add a new education and then get all educations. 
     
@@ -48,14 +48,25 @@ def test_education():
         "grade": "86%",
         "logo": "example-logo.png"
     }
-    item_id = app.test_client().post('/resume/education',
-                                     json=example_education).json['id']
+    response = app.test_client().post('/resume/education', json=example_education)
+    item_id = response.json['id']
 
     response = app.test_client().get('/resume/education')
     assert response.json[item_id] == example_education
+    assert 'id' in response.json
+    item_id = response.json['id']
+
+    response = app.test_client().get(f'/resume/education/?id={item_id}')
+    assert response.status_code == 200
+    assert response.json[str(item_id)]['course'] == example_education['course']
+    assert response.json[str(item_id)]['school'] == example_education['school']
+    assert response.json[str(item_id)]['start_date'] == example_education['start_date']
+    assert response.json[str(item_id)]['end_date'] == example_education['end_date']
+    assert response.json[str(item_id)]['grade'] == example_education['grade']
+    assert response.json[str(item_id)]['logo'] == example_education['logo']
+
 
 def test_getting_education_by_id():
-    
     '''
     Fetch Education details by its ID.
     
@@ -110,7 +121,6 @@ def test_getting_every_education():
             "logo": "stanford-logo.png"
         }
     ]
-    
     for edu in example_educations:
         response = app.test_client().post('/resume/education/', json=edu)
         assert response.status_code == 200  # Assuming POST returns 200 OK
@@ -119,7 +129,6 @@ def test_getting_every_education():
     response = app.test_client().get('/resume/education/')
     assert response.status_code == 200
     assert isinstance(response.json, list)
-    
     # Check if we have at least as many entries as we just added
     assert len(response.json) >= len(example_educations)
 
@@ -143,6 +152,46 @@ def test_getting_every_education():
             all(item in edu.items() for item in example_edu.items())
             for edu in response.json
         )
+
+
+def test_updating_education():
+    '''
+    Updates Education details by its ID.
+    
+    Check that the returned education matches the updated education.
+    '''
+    example_education = {
+        "course": "Engineering",
+        "school": "NYU",
+        "start_date": "October 2022",
+        "end_date": "August 2024",
+        "grade": "86%",
+        "logo": "example-logo.png"
+    }
+
+    # Add the new education entry
+    response = app.test_client().post('/resume/education', json=example_education)
+    item_id = response.json['id']
+
+    # Update the education entry by its ID
+    updated_education = {
+        "course": "Computer Engineering",
+        "school": "MIT",
+        "start_date": "September 2022",
+        "end_date": "June 2026",
+        "grade": "95%",
+        "logo": "mit-logo.png"
+    }
+
+    response = app.test_client().put(f'/resume/education/{item_id}', json=updated_education)
+    assert response.status_code == 200
+    assert response.json['course'] == updated_education['course']
+    assert response.json['school'] == updated_education['school']
+    assert response.json['start_date'] == updated_education['start_date']
+    assert response.json['end_date'] == updated_education['end_date']
+    assert response.json['grade'] == updated_education['grade']
+    assert response.json['logo'] == updated_education['logo']
+
 
 def test_skill():
     '''
