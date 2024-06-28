@@ -221,6 +221,28 @@ def test_experience_deletion():
     response = app.test_client().delete(f'/resume/experience?id={id}')
     assert response.status_code == 204
     
+def test_experience_retrieval():
+    '''
+    Add an experience to the empty experience list.
+    Get the first experience from the list.
+    
+    Check if the retrieved experience is correct.
+    '''
+    new_experience = {
+        'title': 'Software Developer',
+        'company': 'A Cool Company',
+        'start_date': 'October 2022',
+        'end_date': 'Present',
+        'description': 'Writing Python Code',
+        'logo': 'example-logo.png'
+    }
+    id = app.test_client().post('/resume/experience', json = new_experience).json['id']
+    response = app.test_client().get(f'/resume/experience?id={id}')
+    assert response.status_code == 200
+    assert response.json['title'] == 'Software Developer'
+    assert response.json['company'] == 'A Cool Company'
+    assert response.json['description'] == 'Writing Python Code'
+
 def test_update_skill():
     new_skill = {
         "name": "Haskell",
