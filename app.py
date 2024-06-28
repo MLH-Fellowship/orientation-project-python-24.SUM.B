@@ -36,8 +36,7 @@ data = {
 
 @app.route('/test')
 def hello_world():
-    '''
-    Returns a JSON test message
+    ''' Returns a JSON test message
     '''
     return jsonify({"message": "Hello, World!"})
 
@@ -63,8 +62,8 @@ def experience():
                 "end_date": exp.end_date,
                 "description": exp.description,
                 "logo": exp.logo,
-                })
-        abort(404, description="Experience not found") # 404 if ID isn't valid
+            })
+        abort(404, description="Experience not found")  # 404 if ID isn't valid
 
     if request.method == 'POST':
         experience_data = request.json
@@ -76,34 +75,41 @@ def experience():
                                     experience_data["logo"])
         data["experience"].append(new_experience)
         return jsonify({"id": len(data["experience"])-1})
-    
+
     if request.method == 'DELETE':
         index = request.args.get("id")
         index = int(index)
         if 0 <= index < len(data["experience"]) and len(data["experience"]) > 0:
             data["experience"].pop(index)
-            return Response(status=204) # Return no content body, not necessary for DELETE
+            # Return no content body, not necessary for DELETE
+            return Response(status=204)
         abort(404, description="Experience not found")
-        
+
     return jsonify({})
+
 
 @app.route('/resume/education/', methods=['GET', 'POST', 'PUT'])
 def education():
-    '''
-    Handles education requests
+    ''' Handles education requests
+    Returns
+    -------
+    A JSON object representing the data associated with the ID passed as query parameter
+    It can be None or an integer. If None it returns empty json object.
     '''
     if request.method == 'GET':
         index = request.args.get("id")
         return handle_education_get_request(data, index)
     if request.method == 'POST':
         new_education_data = request.json
-        data, response = handle_education_post_request(data, new_education_data)
+        data, response = handle_education_post_request(
+            data, new_education_data)
         return response
     if request.method == 'PUT':
         index = request.args.get("id")
         index = int(index)
         new_education_data = request.json
-        data, response = handle_education_put_request(data, new_education_data, index)
+        data, response = handle_education_put_request(
+            data, new_education_data, index)
         return response
 
     return jsonify({})
@@ -113,6 +119,10 @@ def education():
 def skill():
     '''
     Handles Skill requests
+    Returns
+    -------
+    A JSON object representing the data associated with the ID passed as query parameter
+    It can be None or an integer. If None it returns empty json object.
     '''
     if request.method == 'GET':
         return jsonify({})
@@ -127,10 +137,15 @@ def skill():
     return jsonify({})
 
 
-#Delete Existing Skill by Index
+# Delete Existing Skill by Index
 @app.route('/resume/skill/<int:skill_id>', methods=['DELETE'])
-
 def delete_skill(skill_id):
+    ''' Delete Existing Skill by Index
+    Parameter
+    -------
+    skill_id: int
+        index of a particular skill
+    '''
 
     if 0 <= skill_id < len(data["skill"]):
         deleted_skill = data["skill"].pop(skill_id)
@@ -139,19 +154,27 @@ def delete_skill(skill_id):
         abort(404, description="Skill not found")
 
 
-#Update Exisitng Skill by Index
+# Update Exisitng Skill by Index
 @app.route('/resume/skill/<int:skill_id>', methods=['PUT'])
 def edit_skill(skill_id):
+    ''' Update Exisitng Skill by Index
+    Parameter
+    -------
+    skill_id: int
+        index of a particular skill
+    '''
 
     if 0 <= skill_id < len(data["skill"]):
         skill_data = request.json
         new_skill = data["skill"](skill_id)
         new_skill.name = skill_data.get('name', new_skill.name)
-        new_skill.proficiency = skill_data.get('proficiency', new_skill.proficiency)
+        new_skill.proficiency = skill_data.get(
+            'proficiency', new_skill.proficiency)
         new_skill.logo = skill_data.get('logo', new_skill.logo)
         return jsonify(new_skill.__dict__), 200
     else:
         abort(404, description="Skill not found")
+
 
 @app.route('/resume/spell-check', methods=['POST'])
 def spell_check():
@@ -159,7 +182,7 @@ def spell_check():
     Handle spell checking on phrases.
     Note that since the spell checker is based on a simple Levenshtein Distance algorithm,
     some spell checking results may not be exactly correct.
-    
+
     Returns a JSON format equivalent to the one suggested in issue #11.
     '''
     if request.method == 'POST':
