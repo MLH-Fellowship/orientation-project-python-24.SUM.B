@@ -108,6 +108,10 @@ def education():
         new_education_data = request.json
         data, response = handle_education_put_request(data, new_education_data, index)
         return response
+    if request.method == 'DELETE':
+        index = request.args.get("id")
+        data, response = handle_education_delete_request(data, index)
+        return response
 
     return jsonify({})
 
