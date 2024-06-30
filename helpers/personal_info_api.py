@@ -22,7 +22,7 @@ def add_personal_data(data,new_personal_data):
           phone=new_personal_data.get('phone')
         )
         data["personal_info"] = personal_info
-        return (data, jsonify({"personal_info": data["personal_info"]}))
+        return (data, jsonify(personal_info.__dict__))
       else:
         return (data, Response(status=400, description="Bad Request"))
 
