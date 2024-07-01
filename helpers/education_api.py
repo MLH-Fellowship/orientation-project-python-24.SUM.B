@@ -64,3 +64,17 @@ def handle_education_put_request(data, index, new_education_data):
         return (data, jsonify({"error": "Invalid index. Must be an integer."}))
     except Exception as e:
         return (data, jsonify({"error": f"Server Error: {str(e)}"}))
+
+def handle_education_delete_request(data, index):
+    try:
+        index = int(index)
+        if 0 <= index < len(data["education"]):
+            # Delete the education object at the given index
+            data["education"].pop(index)
+            return (data, Response(status=204))
+        else:
+            return (data, jsonify({"error": "Education not found"}))
+    except ValueError:
+        return (data, jsonify({"error": "Invalid index. Must be an integer."}))
+    except Exception as e:
+        return (data, jsonify({"error": f"Server Error: {str(e)}"}))

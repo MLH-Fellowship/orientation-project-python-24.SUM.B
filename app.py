@@ -3,8 +3,9 @@ Flask Application
 '''
 from spellchecker import SpellChecker
 from flask import Flask, jsonify, request, abort, Response
-from models import Experience, Education, Skill
+from models import Experience, Education, Skill, PersonalInfo
 from helpers.education_api import *
+from helpers.personal_info_api import *
 
 app = Flask(__name__)
 spell = SpellChecker(distance=2)
@@ -30,7 +31,9 @@ data = {
         Skill("Python",
               "1-2 Years",
               "example-logo.png")
-    ]
+    ],
+    "pesronal_info": PersonalInfo("Zeyad Tarek","zeyad.ta01@gmail.com","+201111111111")
+    
 }
 
 
@@ -104,6 +107,29 @@ def education():
         index = int(index)
         new_education_data = request.json
         data, response = handle_education_put_request(data, new_education_data, index)
+        return response
+    if request.method == 'DELETE':
+        index = request.args.get("id")
+        data, response = handle_education_delete_request(data, index)
+        return response
+
+    return jsonify({})
+
+# To Get, Add, and update personal info
+@app.route('/resume/personal-info/', methods=['GET', 'POST', 'PUT'])
+def personal_info():
+    '''
+    Handles personal info requests
+    '''
+    if request.method == 'GET':
+        return get_personal_data(data)
+    if request.method == 'POST':
+        new_personal_data = request.json
+        data, response = add_personal_data(data, new_personal_data)
+        return response
+    if request.method == 'PUT':
+        updated_personal_data = request.json
+        data, response = update_personal_data(data, updated_personal_data)
         return response
 
     return jsonify({})
